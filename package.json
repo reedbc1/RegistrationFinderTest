@@ -1,0 +1,25 @@
+{
+  "name": "registration-finder-load-test",
+  "version": "1.0.0",
+  "description": "Load testing suite for Registration Finder website",
+  "scripts": {
+    "test:playwright": "playwright test",
+    "test:load-small": "artillery run --target https://registrationfinder.onrender.com artillery/load-test-small.yml",
+    "test:load-conservative": "artillery run --target https://registrationfinder.onrender.com artillery/load-test-conservative.yml",
+    "test:load-full": "artillery run --target https://registrationfinder.onrender.com artillery/load-test.yml",
+    "test:load-report": "artillery run --target https://registrationfinder.onrender.com --output report.json artillery/load-test.yml && artillery report report.json"
+  },
+  "keywords": [
+    "load-testing",
+    "playwright",
+    "artillery"
+  ],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@playwright/test": "^1.40.0",
+    "artillery": "^2.0.0",
+    "dotenv": "^16.3.1",
+    "typescript": "^5.3.0"
+  }
+}

@@ -1,0 +1,35 @@
+config:
+  target: "https://registrationfinder.onrender.com"
+  # ============================================
+  # CONFIGURATION VARIABLES - Easy to modify
+  # ============================================
+  variables:
+    concurrentRequests: 10    # Number of requests to run at the same time
+    totalIterations: 5        # Number of times to repeat the concurrent batch
+    # Total requests = concurrentRequests × totalIterations = 50
+  
+  phases:
+    # Run 50 total requests with max 10 concurrent
+    - duration: 10            # Duration in seconds
+      arrivalRate: 5          # 5 users per second = 50 users in 10 seconds
+      maxVusers: 10           # Maximum concurrent users at any time
+      name: "Controlled load - 50 total requests, max 10 concurrent"
+  
+  processor: "./processor.js"
+  
+  # Performance expectations
+  ensure:
+    maxErrorRate: 10          # Allow up to 10% errors (rate limiting)
+    p95: 8000                 # 95th percentile under 8 seconds
+    p99: 15000                # 99th percentile under 15 seconds
+
+scenarios:
+  - name: "Submit registration form"
+    flow:
+      - post:
+          url: "/lookup"
+          beforeRequest: "setFormData"
+          form:
+            streetAddress: "{{ streetAddress }}"
+            ZIPCode: "{{ zipCode }}"
+          afterResponse: "validateResults"

@@ -1,0 +1,44 @@
+config:
+  target: "https://registrationfinder.onrender.com"
+  phases:
+    - duration: 60
+      arrivalRate: 1
+      name: "Warm up - 1 user per second"
+    - duration: 120
+      arrivalRate: 5
+      name: "Ramp up - 5 users per second"
+    - duration: 180
+      arrivalRate: 10
+      name: "Sustained load - 10 users per second"
+    - duration: 120
+      arrivalRate: 20
+      name: "Peak load - 20 users per second"
+  processor: "./processor.js"
+  plugins:
+    expect: {}
+  ensure:
+    maxErrorRate: 5  # Max 5% error rate
+    p95: 5000        # 95th percentile response time under 5 seconds
+    p99: 10000       # 99th percentile response time under 10 seconds
+
+scenarios:
+  - name: "Submit registration form"
+    flow:
+      - post:
+          url: "/lookup"
+          beforeRequest: "setFormData"
+          form:
+            streetAddress: "{{ streetAddress }}"
+            ZIPCode: "{{ zipCode }}"
+          expect:
+            - statusCode: 200
+            - contentType: text/html
+            - hasProperty: body
+          capture:
+            - regexp: "Returned Address: ([^<]+)"
+              as: returnedAddress
+            - regexp: "Geographic Code: ([^<]+)"
+              as: geographicCode
+            - regexp: "Patron Type: ([^<]+)"
+              as: patronType
+          afterResponse: "validateResults"
